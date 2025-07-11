@@ -968,6 +968,146 @@ body::before {
     z-index: 2;
 }
 
+/* Equipment Chart Styles */
+.equipment-chart-container {
+    padding: 15px;
+    height: calc(100% - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.equipment-chart-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+    z-index: 1;
+}
+
+.equipment-chart-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+    animation: chartPulse 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes chartPulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.02);
+        filter: brightness(1.1);
+    }
+}
+
+/* User Header PLN Indonesia Styling */
+.user-header {
+    background: linear-gradient(135deg, #fff9c4, #ffeaa7, #fdcb6e);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: headerShimmer 4s infinite;
+    z-index: 1;
+}
+
+.user-info {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.pln-indonesia-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: #2d3436;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: plnTextAnimation 3s ease-in-out infinite;
+    display: inline-block;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes headerShimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes plnTextAnimation {
+    0%, 100% {
+        transform: translateX(0) scale(1);
+        color: #2d3436;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    25% {
+        transform: translateX(5px) scale(1.05);
+        color: #0984e3;
+        text-shadow: 0 0 10px rgba(9, 132, 227, 0.5);
+    }
+    50% {
+        transform: translateX(-3px) scale(1.02);
+        color: #00b894;
+        text-shadow: 0 0 15px rgba(0, 184, 148, 0.6);
+    }
+    75% {
+        transform: translateX(3px) scale(1.03);
+        color: #e17055;
+        text-shadow: 0 0 12px rgba(225, 112, 85, 0.5);
+    }
+}
+
+/* PLN Indonesia Header Animation */
+.equipment-header span {
+    animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    0% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        transform: translateX(0);
+    }
+    100% {
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 25px rgba(0, 255, 255, 0.6);
+        transform: translateX(2px);
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 1400px) {
     .dashboard-grid {

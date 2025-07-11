@@ -701,7 +701,7 @@ function populateLokasiButtons() {
     });
 }
 
-// Update equipment panel with dynamic data
+// Update equipment panel with bar chart
 function updateEquipmentPanel() {
     const equipmentData = {};
     
@@ -720,58 +720,143 @@ function updateEquipmentPanel() {
         }
     });
     
-    // Calculate total for percentage
-    const totalEquipment = Object.values(equipmentData).reduce((sum, item) => sum + item.count, 0);
-    
-    // Define equipment types and their priorities
+    // Define equipment types and their colors
     const equipmentTypes = {
-        'IBT': { name: 'IBT', description: 'Interbus Transformer - Peralatan transformator antar bus', color: 'ibt-fill' },
-        'TRAFO': { name: 'TRAFO', description: 'Transformator - Peralatan utama untuk mengubah tegangan', color: 'trafo-fill' },
-        'PMT': { name: 'PMT', description: 'Pemutus Tenaga - Peralatan untuk memutus dan menghubungkan rangkaian', color: 'pmt-fill' },
-        'PMS': { name: 'PMS', description: 'Pemisah - Peralatan untuk memisahkan rangkaian listrik', color: 'pms-fill' },
-        'LA': { name: 'LA', description: 'Lightning Arrester - Peralatan pelindung dari petir', color: 'la-fill' },
-        'CT': { name: 'CT', description: 'Current Transformer - Peralatan untuk mengukur arus listrik', color: 'ct-fill' },
-        'BAY': { name: 'BAY', description: 'Bay - Unit bay dalam gardu induk', color: 'bay-fill' }
+        'IBT': { name: 'IBT', color: '#ff9500' },
+        'TRAFO': { name: 'TRAFO', color: '#ff4757' },
+        'PMT': { name: 'PMT', color: '#ff6b9d' },
+        'PMS': { name: 'PMS', color: '#00d2d3' },
+        'LA': { name: 'LA', color: '#2ed573' },
+        'CT': { name: 'CT', color: '#5352ed' },
+        'BAY': { name: 'BAY', color: '#ffa502' }
     };
     
-    const equipmentList = document.getElementById('equipment-list');
-    if (!equipmentList) return;
-    
-    equipmentList.innerHTML = '';
+    // Prepare chart data
+    const labels = [];
+    const data = [];
+    const backgroundColors = [];
     
     Object.entries(equipmentTypes).forEach(([type, config]) => {
-        const data = equipmentData[type] || { count: 0, status: 'Normal' };
-        const percentage = totalEquipment > 0 ? Math.round((data.count / totalEquipment) * 100) : 0;
-        
-        // Determine priority based on percentage
-        let priorityClass = '';
-        let statusText = 'Status: Normal';
-        if (percentage >= 70) {
-            priorityClass = 'priority-high';
-            statusText = 'Status: Prioritas Tinggi';
-        } else if (percentage >= 40) {
-            priorityClass = 'priority-medium';
-            statusText = 'Status: Prioritas Sedang';
+        const count = equipmentData[type] ? equipmentData[type].count : 0;
+        labels.push(config.name);
+        data.push(count);
+        backgroundColors.push(config.color);
+    });
+    
+    // Create or update chart
+    const canvas = document.getElementById('equipment-chart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Destroy existing chart if any
+    if (window.equipmentChart) {
+        window.equipmentChart.destroy();
+    }
+    
+    window.equipmentChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Jumlah Equipment',
+                data: data,
+                backgroundColor: backgroundColors,
+                borderColor: backgroundColors.map(color => color + '80'),
+                borderWidth: 1,
+                borderRadius: 4,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: '#333',
+                    borderWidth: 1,
+                    cornerRadius: 6,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y + ' unit';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#ffffff',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ffffff',
+                        font: {
+                            size: 11,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutBounce',
+                delay: (context) => {
+                    let delay = 0;
+                    if (context.type === 'data' && context.mode === 'default') {
+                        delay = context.dataIndex * 200;
+                    }
+                    return delay;
+                },
+                onComplete: () => {
+                    // Add pulsing animation to bars
+                    const chart = window.equipmentChart;
+                    if (chart) {
+                        setInterval(() => {
+                            chart.update('none');
+                        }, 3000);
+                    }
+                }
+            },
+            hover: {
+                animationDuration: 300
+            },
+            transitions: {
+                active: {
+                    animation: {
+                        duration: 400
+                    }
+                }
+            }
         }
-        
-        const equipmentItem = document.createElement('div');
-        equipmentItem.className = 'equipment-item';
-        equipmentItem.setAttribute('data-tooltip', config.description);
-        equipmentItem.innerHTML = `
-            <div class="equipment-info">
-                <span class="equipment-label">${config.name}</span>
-                <span class="equipment-percentage">${percentage}%</span>
-            </div>
-            <div class="equipment-bar">
-                <div class="equipment-fill ${config.color}" style="width: ${percentage}%"></div>
-                <span class="equipment-value">${data.count} unit</span>
-            </div>
-            <div class="equipment-details">
-                <span class="equipment-status ${priorityClass}">${statusText}</span>
-            </div>
-        `;
-        
-        equipmentList.appendChild(equipmentItem);
     });
 }
 
