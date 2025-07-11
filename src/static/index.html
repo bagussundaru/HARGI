@@ -15,6 +15,11 @@
         <div class="user-header">
             <div class="user-info">
                 <span id="user-welcome">Welcome, User</span>
+                <span id="admin-link" class="admin-link" style="display: none;">
+                    <a href="/admin" style="color: #007bff; text-decoration: none; margin-left: 1rem;">
+                        <i class="fas fa-cog"></i> Admin Panel
+                    </a>
+                </span>
             </div>
             <button id="logout-btn" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
@@ -365,6 +370,11 @@
                 // Update user welcome message
                 document.getElementById('user-welcome').textContent = 
                     `Welcome, ${data.user.username} (${data.user.role})`;
+                
+                // Show admin link if user is admin
+                if (data.user.role === 'admin') {
+                    document.getElementById('admin-link').style.display = 'inline';
+                }
                 
                 return true;
             } catch (error) {

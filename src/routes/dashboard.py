@@ -54,10 +54,11 @@ def excel_date_to_datetime(excel_date):
     return None
 
 def load_excel_data():
-    file_path = Config.EXCEL_FILE_PATH
+    # Try to find Excel file dynamically
+    file_path = Config.find_excel_file()
     
-    # Check if file exists, if not return sample data for demo
-    if not os.path.exists(file_path):
+    # If no file found, return sample data for demo
+    if not file_path:
         return get_sample_data()
     
     try:
@@ -267,6 +268,86 @@ def get_equipment_distribution_data():
             equipment_counts[kategori] += 1
         
         return jsonify(equipment_counts)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@dashboard_bp.route("/file-info", methods=["GET"])
+@login_required
+def get_file_info():
+    """Get current Excel file information"""
+    try:
+        current_file = Config.find_excel_file()
+        return jsonify({
+            "current_file": current_file,
+            "configured_path": Config.EXCEL_FILE_PATH,
+            "file_exists": current_file is not None,
+            "using_sample_data": current_file is None
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@dashboard_bp.route("/set-file-path", methods=["POST"])
+@login_required
+def set_file_path():
+    """Set new Excel file path"""
+    try:
+        data = request.get_json()
+        new_path = data.get('file_path')
+        
+        if not new_path:
+            return jsonify({"error": "file_path is required"}), 400
+        
+        success = Config.set_excel_path(new_path)
+        if success:
+            return jsonify({
+                "message": "File path updated successfully",
+                "new_path": new_path,
+                "success": True
+            })
+        else:
+            return jsonify({
+                "error": "File not found at specified path",
+                "path": new_path,
+                "success": False
+            }), 404
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@dashboard_bp.route("/search-files", methods=["GET"])
+@login_required
+def search_excel_files():
+    """Search for Excel files in common locations"""
+    try:
+        search_locations = [
+            'D:\\',
+            'C:\\',
+            os.path.dirname(os.path.dirname(__file__)),  # Project root
+            os.getcwd(),  # Current working directory
+        ]
+        
+        found_files = []
+        
+        for location in search_locations:
+            try:
+                if os.path.exists(location):
+                    for file in os.listdir(location):
+                        if file.lower().startswith('dashboard') and file.lower().endswith('.xlsx'):
+                            full_path = os.path.join(location, file)
+                            found_files.append({
+                                "filename": file,
+                                "full_path": full_path,
+                                "location": location,
+                                "size": os.path.getsize(full_path) if os.path.exists(full_path) else 0
+                            })
+            except (PermissionError, OSError):
+                continue
+        
+        return jsonify({
+            "found_files": found_files,
+            "total_found": len(found_files)
+        })
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

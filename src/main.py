@@ -45,6 +45,19 @@ def dashboard_page():
     else:
         return "index.html not found", 404
 
+@app.route('/admin')
+def admin_page():
+    """Serve admin page"""
+    static_folder_path = app.static_folder
+    if static_folder_path is None:
+        return "Static folder not configured", 404
+    
+    admin_path = os.path.join(static_folder_path, 'admin.html')
+    if os.path.exists(admin_path):
+        return send_from_directory(static_folder_path, 'admin.html')
+    else:
+        return "admin.html not found", 404
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
