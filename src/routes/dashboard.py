@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timedelta
 from collections import defaultdict
 from src.config import Config
+from src.routes.auth import login_required
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
@@ -129,6 +130,7 @@ def apply_filters(data, filters):
     return filtered_data
 
 @dashboard_bp.route("/data", methods=["GET"])
+@login_required
 def get_dashboard_data():
     try:
         realisasi_data, filters = load_excel_data()
@@ -137,6 +139,7 @@ def get_dashboard_data():
         return jsonify({"error": str(e)}), 500
 
 @dashboard_bp.route("/kpi", methods=["GET"])
+@login_required
 def get_kpi_data():
     try:
         realisasi_data, _ = load_excel_data()
@@ -175,6 +178,7 @@ def get_kpi_data():
         return jsonify({"error": str(e)}), 500
 
 @dashboard_bp.route("/charts/sifat-pekerjaan", methods=["GET"])
+@login_required
 def get_sifat_pekerjaan_chart_data():
     try:
         realisasi_data, _ = load_excel_data()
@@ -197,6 +201,7 @@ def get_sifat_pekerjaan_chart_data():
         return jsonify({"error": str(e)}), 500
 
 @dashboard_bp.route("/charts/status-pekerjaan", methods=["GET"])
+@login_required
 def get_status_pekerjaan_chart_data():
     try:
         realisasi_data, _ = load_excel_data()
@@ -219,6 +224,7 @@ def get_status_pekerjaan_chart_data():
         return jsonify({"error": str(e)}), 500
 
 @dashboard_bp.route("/charts/lokasi-distribusi", methods=["GET"])
+@login_required
 def get_lokasi_distribusi_chart_data():
     try:
         realisasi_data, _ = load_excel_data()
@@ -242,6 +248,7 @@ def get_lokasi_distribusi_chart_data():
         return jsonify({"error": str(e)}), 500
 
 @dashboard_bp.route("/charts/equipment-distribution", methods=["GET"])
+@login_required
 def get_equipment_distribution_data():
     try:
         realisasi_data, _ = load_excel_data()

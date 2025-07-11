@@ -11,6 +11,17 @@
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- User Header -->
+        <div class="user-header">
+            <div class="user-info">
+                <span id="user-welcome">Welcome, User</span>
+            </div>
+            <button id="logout-btn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+        
         <!-- Top Header with KPI Cards -->
         <header class="top-header">
             <div class="kpi-header-cards">
@@ -299,6 +310,95 @@
     </div>
 
     <script src="dashboard.js"></script>
+    
+    <style>
+        .user-header {
+            background: #fff;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .user-info {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .logout-btn i {
+            font-size: 0.8rem;
+        }
+    </style>
+    
+    <script>
+        // Authentication check
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                    return false;
+                }
+                
+                // Update user welcome message
+                document.getElementById('user-welcome').textContent = 
+                    `Welcome, ${data.user.username} (${data.user.role})`;
+                
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login';
+                return false;
+            }
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Logout failed:', error);
+                window.location.href = '/login';
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('logout-btn').addEventListener('click', logout);
+        
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuthenticated = await checkAuth();
+            if (isAuthenticated) {
+                // Initialize dashboard only if authenticated
+                if (typeof initializeDashboard === 'function') {
+                    initializeDashboard();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
 
