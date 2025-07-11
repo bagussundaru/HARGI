@@ -15,16 +15,7 @@
         <div class="user-header">
             <div class="user-info">
                 <span id="user-welcome">Welcome, User</span>
-                <span id="admin-link" class="admin-link" style="display: none;">
-                    <a href="/admin" style="color: #007bff; text-decoration: none; margin-left: 1rem;">
-                        <i class="fas fa-cog"></i> Admin Panel
-                    </a>
-                </span>
             </div>
-            <button id="logout-btn" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
-            </button>
         </div>
         
         <!-- Top Header with KPI Cards -->
@@ -361,6 +352,53 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Small Info Box - Bottom Right -->
+        <div class="info-box" id="info-box">
+            <div class="info-box-header">
+                <div class="header-left">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Info</span>
+                </div>
+                <button class="box-toggle-btn" onclick="toggleBox('info-box')">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <div class="info-box-content">
+                <div class="info-item">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value online">Online</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Update:</span>
+                    <span class="info-value">Real-time</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Actions Box - Bottom Left -->
+        <div class="user-actions-box" id="user-actions-box">
+            <div class="user-actions-header">
+                <div class="header-left">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Actions</span>
+                </div>
+                <button class="box-toggle-btn" onclick="toggleBox('user-actions-box')">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <div class="user-actions-content">
+                <span id="admin-link" class="action-link" style="display: none;">
+                    <a href="/admin">
+                        <i class="fas fa-cog"></i> Admin Panel
+                    </a>
+                </span>
+                <button id="logout-btn" class="action-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="dashboard.js"></script>
@@ -446,6 +484,20 @@
         
         // Event listeners
         document.getElementById('logout-btn').addEventListener('click', logout);
+        
+        // Toggle box visibility
+        function toggleBox(boxId) {
+            const box = document.getElementById(boxId);
+            const toggleBtn = box.querySelector('.box-toggle-btn i');
+            
+            if (box.classList.contains('collapsed')) {
+                box.classList.remove('collapsed');
+                toggleBtn.className = 'fas fa-minus';
+            } else {
+                box.classList.add('collapsed');
+                toggleBtn.className = 'fas fa-plus';
+            }
+        }
         
         // Check authentication on page load
         document.addEventListener('DOMContentLoaded', async function() {
