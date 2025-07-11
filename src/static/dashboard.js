@@ -399,8 +399,11 @@ function updateMainChart() {
     // Group data by location
     const locationData = {};
     filteredData.forEach(item => {
-        if (!locationData[item.lokasi]) {
-            locationData[item.lokasi] = {
+        const lokasi = item['LOKASI GI / GIS / GITET'] || item.lokasi || 'Unknown';
+        const sifatPekerjaan = item['SIFAT PEKERJAAN'] || item.sifat_pekerjaan || '';
+        
+        if (!locationData[lokasi]) {
+            locationData[lokasi] = {
                 anomali: 0,
                 gantiMtu: 0,
                 nonRutin: 0,
@@ -408,18 +411,18 @@ function updateMainChart() {
             };
         }
         
-        switch(item.sifat_pekerjaan) {
+        switch(sifatPekerjaan.toUpperCase()) {
             case 'ANOMALI':
-                locationData[item.lokasi].anomali++;
+                locationData[lokasi].anomali++;
                 break;
             case 'GANTI MTU':
-                locationData[item.lokasi].gantiMtu++;
+                locationData[lokasi].gantiMtu++;
                 break;
             case 'NON RUTIN':
-                locationData[item.lokasi].nonRutin++;
+                locationData[lokasi].nonRutin++;
                 break;
             case 'RUTIN':
-                locationData[item.lokasi].rutin++;
+                locationData[lokasi].rutin++;
                 break;
         }
     });
