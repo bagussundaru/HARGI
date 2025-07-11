@@ -15,7 +15,8 @@ def get_sample_data():
             "LOKASI GI / GIS / GITET": "GI Bandung",
             "STATUS": "Selesai",
             "SIFAT PEKERJAAN": "RUTIN",
-            "KATEGORI": "Pemeliharaan",
+            "KATEGORI": "TRAFO",
+            "BAY / PHT": "BAY 1",
             "BULAN": "January",
             "TAHUN": "2024"
         },
@@ -23,7 +24,8 @@ def get_sample_data():
             "LOKASI GI / GIS / GITET": "GI Jakarta",
             "STATUS": "Progress",
             "SIFAT PEKERJAAN": "ANOMALI",
-            "KATEGORI": "Perbaikan",
+            "KATEGORI": "PMT",
+            "BAY / PHT": "BAY 2",
             "BULAN": "February",
             "TAHUN": "2024"
         },
@@ -31,19 +33,47 @@ def get_sample_data():
             "LOKASI GI / GIS / GITET": "GI Surabaya",
             "STATUS": "Selesai",
             "SIFAT PEKERJAAN": "GANTI MTU",
-            "KATEGORI": "Upgrade",
+            "KATEGORI": "CT",
+            "BAY / PHT": "BAY 3",
             "BULAN": "March",
+            "TAHUN": "2024"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Bandung",
+            "STATUS": "Progress",
+            "SIFAT PEKERJAAN": "NON RUTIN",
+            "KATEGORI": "IBT",
+            "BAY / PHT": "BAY 4",
+            "BULAN": "April",
+            "TAHUN": "2024"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Jakarta",
+            "STATUS": "Selesai",
+            "SIFAT PEKERJAAN": "RUTIN",
+            "KATEGORI": "LA",
+            "BAY / PHT": "BAY 5",
+            "BULAN": "May",
+            "TAHUN": "2024"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Surabaya",
+            "STATUS": "Progress",
+            "SIFAT PEKERJAAN": "ANOMALI",
+            "KATEGORI": "PMS",
+            "BAY / PHT": "BAY 6",
+            "BULAN": "June",
             "TAHUN": "2024"
         }
     ]
     
     filters = {
         "years": ["2024"],
-        "months": ["January", "February", "March"],
+        "months": ["January", "February", "March", "April", "May", "June"],
         "locations": ["GI Bandung", "GI Jakarta", "GI Surabaya"],
         "statuses": ["Selesai", "Progress"],
-        "sifat_pekerjaan": ["RUTIN", "ANOMALI", "GANTI MTU"],
-        "kategori": ["Pemeliharaan", "Perbaikan", "Upgrade"]
+        "sifat_pekerjaan": ["RUTIN", "ANOMALI", "GANTI MTU", "NON RUTIN"],
+        "kategori": ["TRAFO", "PMT", "CT", "IBT", "LA", "PMS"]
     }
     
     return sample_data, filters
@@ -264,8 +294,10 @@ def get_equipment_distribution_data():
 
         equipment_counts = defaultdict(int)
         for item in filtered_data:
-            kategori = item.get("KATEGORI", "Unknown")
-            equipment_counts[kategori] += 1
+            # Try multiple possible field names for equipment data
+            kategori = item.get("KATEGORI") or item.get("BAY / PHT") or "Unknown"
+            if kategori and kategori != "Unknown":
+                equipment_counts[kategori] += 1
         
         return jsonify(equipment_counts)
     except Exception as e:

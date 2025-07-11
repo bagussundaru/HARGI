@@ -169,6 +169,7 @@ function applyFilters() {
 function updateDashboard() {
     updateKPICards();
     updateCharts();
+    updateEquipmentPanel();
     updateSifatPekerjaanStats();
 }
 
@@ -535,29 +536,131 @@ function updateSifatPekerjaanStats() {
 // Populate location list in right panel
 function populateLocationList() {
     const locationList = document.getElementById('location-list');
-    const locationCounts = {};
+    const locationData = {};
     
-    // Count items per location
+    // Count items per location and categorize by sifat pekerjaan
     allData.forEach(item => {
         const lokasi = item['LOKASI GI / GIS / GITET'] || item.lokasi || '';
+        const sifat = item['SIFAT PEKERJAAN'] || item.sifat_pekerjaan || '';
+        
         if (lokasi) {
-            locationCounts[lokasi] = (locationCounts[lokasi] || 0) + 1;
+            if (!locationData[lokasi]) {
+                locationData[lokasi] = {
+                    total: 0,
+                    anomali: 0,
+                    gantiMtu: 0,
+                    nonRutin: 0,
+                    rutin: 0
+                };
+            }
+            
+            locationData[lokasi].total++;
+            
+            switch(sifat.toUpperCase()) {
+                case 'ANOMALI':
+                    locationData[lokasi].anomali++;
+                    break;
+                case 'GANTI MTU':
+                    locationData[lokasi].gantiMtu++;
+                    break;
+                case 'NON RUTIN':
+                    locationData[lokasi].nonRutin++;
+                    break;
+                case 'RUTIN':
+                    locationData[lokasi].rutin++;
+                    break;
+            }
         }
     });
     
-    // Sort locations by count (descending)
-    const sortedLocations = Object.entries(locationCounts)
-        .sort(([,a], [,b]) => b - a);
+    // Sort locations by total count (descending)
+    const sortedLocations = Object.entries(locationData)
+        .sort(([,a], [,b]) => b.total - a.total);
     
     locationList.innerHTML = '';
-    sortedLocations.forEach(([location, count]) => {
+    sortedLocations.forEach(([location, data]) => {
         const locationItem = document.createElement('div');
-        locationItem.className = 'location-item';
+        locationItem.className = 'location-item clickable';
         locationItem.innerHTML = `
-            <span class="location-name">${location}</span>
-            <span class="location-count">${count}</span>
+            <div class="location-header">
+                <span class="location-name">${location}</span>
+                <span class="location-count">${data.total}</span>
+            </div>
+            <div class="location-details">
+                <span class="detail-text">Kegiatan Pemeliharaan</span>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="location-chart-container" style="display: none;">
+                <canvas class="location-mini-chart" width="200" height="100"></canvas>
+                <div class="mini-chart-legend">
+                    <div class="mini-legend-item"><span class="mini-dot anomali-dot"></span>Anomali: ${data.anomali}</div>
+                    <div class="mini-legend-item"><span class="mini-dot ganti-mtu-dot"></span>Ganti MTU: ${data.gantiMtu}</div>
+                    <div class="mini-legend-item"><span class="mini-dot non-rutin-dot"></span>Non Rutin: ${data.nonRutin}</div>
+                    <div class="mini-legend-item"><span class="mini-dot rutin-dot"></span>Rutin: ${data.rutin}</div>
+                </div>
+            </div>
         `;
+        
+        // Add click event listener
+        locationItem.addEventListener('click', function() {
+            toggleLocationChart(this, data);
+        });
+        
         locationList.appendChild(locationItem);
+    });
+}
+
+// Toggle location chart visibility and create chart
+function toggleLocationChart(locationItem, data) {
+    const chartContainer = locationItem.querySelector('.location-chart-container');
+    const expandIcon = locationItem.querySelector('.expand-icon');
+    const canvas = locationItem.querySelector('.location-mini-chart');
+    
+    if (chartContainer.style.display === 'none') {
+        chartContainer.style.display = 'block';
+        expandIcon.classList.add('expanded');
+        
+        // Create mini chart
+        createLocationMiniChart(canvas, data);
+    } else {
+        chartContainer.style.display = 'none';
+        expandIcon.classList.remove('expanded');
+        
+        // Destroy existing chart if any
+        if (canvas.chart) {
+            canvas.chart.destroy();
+        }
+    }
+}
+
+// Create mini chart for location
+function createLocationMiniChart(canvas, data) {
+    const ctx = canvas.getContext('2d');
+    
+    // Destroy existing chart if any
+    if (canvas.chart) {
+        canvas.chart.destroy();
+    }
+    
+    canvas.chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Anomali', 'Ganti MTU', 'Non Rutin', 'Rutin'],
+            datasets: [{
+                data: [data.anomali, data.gantiMtu, data.nonRutin, data.rutin],
+                backgroundColor: ['#ff4757', '#ff6b9d', '#747d8c', '#2ed573'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
     });
 }
 
@@ -595,6 +698,80 @@ function populateLokasiButtons() {
             applyFilters();
         });
         lokasiButtons.appendChild(btn);
+    });
+}
+
+// Update equipment panel with dynamic data
+function updateEquipmentPanel() {
+    const equipmentData = {};
+    
+    // Count equipment from filtered data
+    filteredData.forEach(item => {
+        const peralatan = item['KATEGORI'] || item.kategori || item['BAY / PHT'] || '';
+        if (peralatan) {
+            const equipType = peralatan.toUpperCase();
+            if (!equipmentData[equipType]) {
+                equipmentData[equipType] = {
+                    count: 0,
+                    status: 'Normal'
+                };
+            }
+            equipmentData[equipType].count++;
+        }
+    });
+    
+    // Calculate total for percentage
+    const totalEquipment = Object.values(equipmentData).reduce((sum, item) => sum + item.count, 0);
+    
+    // Define equipment types and their priorities
+    const equipmentTypes = {
+        'IBT': { name: 'IBT', description: 'Interbus Transformer - Peralatan transformator antar bus', color: 'ibt-fill' },
+        'TRAFO': { name: 'TRAFO', description: 'Transformator - Peralatan utama untuk mengubah tegangan', color: 'trafo-fill' },
+        'PMT': { name: 'PMT', description: 'Pemutus Tenaga - Peralatan untuk memutus dan menghubungkan rangkaian', color: 'pmt-fill' },
+        'PMS': { name: 'PMS', description: 'Pemisah - Peralatan untuk memisahkan rangkaian listrik', color: 'pms-fill' },
+        'LA': { name: 'LA', description: 'Lightning Arrester - Peralatan pelindung dari petir', color: 'la-fill' },
+        'CT': { name: 'CT', description: 'Current Transformer - Peralatan untuk mengukur arus listrik', color: 'ct-fill' },
+        'BAY': { name: 'BAY', description: 'Bay - Unit bay dalam gardu induk', color: 'bay-fill' }
+    };
+    
+    const equipmentList = document.getElementById('equipment-list');
+    if (!equipmentList) return;
+    
+    equipmentList.innerHTML = '';
+    
+    Object.entries(equipmentTypes).forEach(([type, config]) => {
+        const data = equipmentData[type] || { count: 0, status: 'Normal' };
+        const percentage = totalEquipment > 0 ? Math.round((data.count / totalEquipment) * 100) : 0;
+        
+        // Determine priority based on percentage
+        let priorityClass = '';
+        let statusText = 'Status: Normal';
+        if (percentage >= 70) {
+            priorityClass = 'priority-high';
+            statusText = 'Status: Prioritas Tinggi';
+        } else if (percentage >= 40) {
+            priorityClass = 'priority-medium';
+            statusText = 'Status: Prioritas Sedang';
+        }
+        
+        const equipmentItem = document.createElement('div');
+        equipmentItem.className = 'equipment-item';
+        equipmentItem.setAttribute('data-tooltip', config.description);
+        equipmentItem.innerHTML = `
+            <div class="equipment-info">
+                <span class="equipment-label">${config.name}</span>
+                <span class="equipment-percentage">${percentage}%</span>
+            </div>
+            <div class="equipment-bar">
+                <div class="equipment-fill ${config.color}" style="width: ${percentage}%"></div>
+                <span class="equipment-value">${data.count} unit</span>
+            </div>
+            <div class="equipment-details">
+                <span class="equipment-status ${priorityClass}">${statusText}</span>
+            </div>
+        `;
+        
+        equipmentList.appendChild(equipmentItem);
     });
 }
 
