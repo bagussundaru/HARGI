@@ -6,12 +6,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from src.routes.dashboard import dashboard_bp
+from src.config import Config
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
-app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
+app.config['SECRET_KEY'] = Config.SECRET_KEY
+app.config['DEBUG'] = Config.DEBUG
 
 # Enable CORS for all routes
-CORS(app)
+CORS(app, origins=Config.CORS_ORIGINS)
 
 app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
 

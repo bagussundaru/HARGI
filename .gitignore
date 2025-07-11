@@ -47,6 +47,14 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
+# Vercel
+.vercel
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Temporary files
 *.tmp
 *.temp

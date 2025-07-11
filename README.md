@@ -33,9 +33,9 @@ Har_GI/
 
 ### Prerequisites
 - Python 3.7+
-- File Excel `DASHBOARDHARGI.xlsx` di lokasi `D:\`
+- File Excel `DASHBOARDHARGI.xlsx` di lokasi `D:\` (untuk development lokal)
 
-### Langkah Instalasi
+### Langkah Instalasi Lokal
 
 1. Clone repository:
 ```bash
@@ -64,6 +64,35 @@ pip install -r requirements.txt
 - Linux/Mac: `./start_dashboard.sh`
 
 7. Buka browser dan akses: `http://127.0.0.1:5000`
+
+### Deploy ke Vercel
+
+1. **Persiapan Repository**
+   - Pastikan semua file sudah di-commit ke GitHub
+   - File `vercel.json` dan `api/index.py` sudah tersedia
+
+2. **Deploy ke Vercel**
+   - Buka [vercel.com](https://vercel.com)
+   - Login dengan akun GitHub
+   - Import repository `bagussundaru/HARGI`
+   - Vercel akan otomatis mendeteksi konfigurasi
+
+3. **Environment Variables (Opsional)**
+   Di dashboard Vercel, tambahkan environment variables:
+   ```
+   FLASK_DEBUG=false
+   SECRET_KEY=your-production-secret-key
+   CORS_ORIGINS=https://yourdomain.vercel.app
+   ```
+
+4. **Catatan Penting untuk Deployment**
+   - Excel file tidak akan tersedia di Vercel (cloud environment)
+   - Aplikasi akan menggunakan sample data untuk demo
+   - Untuk data real-time, pertimbangkan menggunakan database cloud
+
+5. **URL Deployment**
+   Setelah deploy berhasil, aplikasi akan tersedia di:
+   `https://your-project-name.vercel.app`
 
 ## Konfigurasi Data
 

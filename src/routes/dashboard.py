@@ -3,8 +3,49 @@ import openpyxl
 import os
 from datetime import datetime, timedelta
 from collections import defaultdict
+from src.config import Config
 
 dashboard_bp = Blueprint("dashboard", __name__)
+
+def get_sample_data():
+    """Return sample data when Excel file is not available"""
+    sample_data = [
+        {
+            "LOKASI GI / GIS / GITET": "GI Bandung",
+            "STATUS": "Selesai",
+            "SIFAT PEKERJAAN": "RUTIN",
+            "KATEGORI": "Pemeliharaan",
+            "BULAN": "January",
+            "TAHUN": "2024"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Jakarta",
+            "STATUS": "Progress",
+            "SIFAT PEKERJAAN": "ANOMALI",
+            "KATEGORI": "Perbaikan",
+            "BULAN": "February",
+            "TAHUN": "2024"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Surabaya",
+            "STATUS": "Selesai",
+            "SIFAT PEKERJAAN": "GANTI MTU",
+            "KATEGORI": "Upgrade",
+            "BULAN": "March",
+            "TAHUN": "2024"
+        }
+    ]
+    
+    filters = {
+        "years": ["2024"],
+        "months": ["January", "February", "March"],
+        "locations": ["GI Bandung", "GI Jakarta", "GI Surabaya"],
+        "statuses": ["Selesai", "Progress"],
+        "sifat_pekerjaan": ["RUTIN", "ANOMALI", "GANTI MTU"],
+        "kategori": ["Pemeliharaan", "Perbaikan", "Upgrade"]
+    }
+    
+    return sample_data, filters
 
 def excel_date_to_datetime(excel_date):
     if isinstance(excel_date, (int, float)):
@@ -12,8 +53,17 @@ def excel_date_to_datetime(excel_date):
     return None
 
 def load_excel_data():
-    file_path = "D:\\DASHBOARDHARGI.xlsx"
-    workbook = openpyxl.load_workbook(file_path)
+    file_path = Config.EXCEL_FILE_PATH
+    
+    # Check if file exists, if not return sample data for demo
+    if not os.path.exists(file_path):
+        return get_sample_data()
+    
+    try:
+        workbook = openpyxl.load_workbook(file_path)
+    except Exception as e:
+        print(f"Error loading Excel file: {e}")
+        return get_sample_data()
 
     realisasi_sheet = workbook["REALISASI HAR GI"]
     realisasi_data = []
