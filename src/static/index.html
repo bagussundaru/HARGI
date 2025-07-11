@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring Pemeliharaan Gardu Induk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Header with KPI Cards -->
+        <header class="top-header">
+            <div class="kpi-header-cards">
+                <div class="kpi-card anomali-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="kpi-label">ANOMALI</div>
+                    <div class="kpi-value" id="header-anomali">15</div>
+                </div>
+                <div class="kpi-card ganti-mtu-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="kpi-label">GANTI MTU</div>
+                    <div class="kpi-value" id="header-ganti-mtu">5</div>
+                </div>
+                <div class="kpi-card rutin-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="kpi-label">RUTIN</div>
+                    <div class="kpi-value" id="header-rutin">45</div>
+                </div>
+                <div class="kpi-card non-rutin-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="kpi-label">NON RUTIN</div>
+                    <div class="kpi-value" id="header-non-rutin">24</div>
+                </div>
+                <div class="kpi-card total-har-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="kpi-label">TOTAL HAR</div>
+                    <div class="kpi-value" id="header-total-har">89</div>
+                </div>
+                <div class="kpi-card total-gi-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="kpi-label">TOTAL</div>
+                    <div class="kpi-value" id="header-total">12</div>
+                </div>
+                <div class="kpi-card progress-card">
+                    <div class="progress-circle">
+                        <canvas id="progress-chart" width="60" height="60"></canvas>
+                        <div class="progress-text">
+                            <span id="progress-percentage">97%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="kpi-card ultg-card">
+                    <div class="ultg-content">
+                        <div class="ultg-label">ULTG BANDUNG TIMUR</div>
+                        <div class="ultg-datetime" id="ultg-datetime">1 Juli 2025 pukul 14.00 WIB</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Top Row -->
+            <div class="top-row">
+                <!-- Left Filters Panel -->
+                <div class="filters-panel">
+                    <!-- Year Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>TAHUN</span>
+                        </div>
+                        <div class="year-buttons">
+                            <button class="year-btn active" data-year="2024">2024</button>
+                            <button class="year-btn" data-year="2025">2025</button>
+                        </div>
+                    </div>
+
+                    <!-- Sifat Pekerjaan Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-tasks"></i>
+                            <span>SIFAT PEKERJAAN</span>
+                        </div>
+                        <div class="sifat-buttons">
+                            <button class="sifat-btn anomali-btn" data-sifat="ANOMALI">ANOMALI</button>
+                            <button class="sifat-btn ganti-mtu-btn" data-sifat="GANTI MTU">GANTI MTU</button>
+                            <button class="sifat-btn non-rutin-btn" data-sifat="NON RUTIN">NON RUTIN</button>
+                            <button class="sifat-btn rutin-btn" data-sifat="RUTIN">RUTIN</button>
+                        </div>
+                    </div>
+
+                    <!-- Month Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-calendar"></i>
+                            <span>BULAN</span>
+                        </div>
+                        <div class="month-grid">
+                            <button class="month-btn" data-month="January">January</button>
+                            <button class="month-btn" data-month="February">February</button>
+                            <button class="month-btn" data-month="March">March</button>
+                            <button class="month-btn" data-month="April">April</button>
+                            <button class="month-btn" data-month="May">May</button>
+                            <button class="month-btn" data-month="June">June</button>
+                            <button class="month-btn" data-month="July">July</button>
+                            <button class="month-btn" data-month="August">August</button>
+                            <button class="month-btn" data-month="September">September</button>
+                            <button class="month-btn" data-month="October">October</button>
+                            <button class="month-btn" data-month="November">November</button>
+                            <button class="month-btn" data-month="December">December</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Charts -->
+                <div class="center-charts">
+                    <!-- Top Pie Chart -->
+                    <div class="pie-chart-container">
+                        <div class="chart-title">JENIS PEMELIHARAAN</div>
+                        <div class="chart-content">
+                            <canvas id="jenis-chart" class="chart-canvas"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot rutin-dot"></span>
+                                    <span>RUTIN</span>
+                                    <span class="legend-value">50%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot anomali-dot"></span>
+                                    <span>ANOMALI</span>
+                                    <span class="legend-value">27%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot ganti-mtu-dot"></span>
+                                    <span>GANTI MTU</span>
+                                    <span class="legend-value">23%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Pie Chart -->
+                    <div class="pie-chart-container">
+                        <div class="chart-title">STATUS PEKERJAAN</div>
+                        <div class="chart-content">
+                            <canvas id="status-chart" class="chart-canvas"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot selesai-dot"></span>
+                                    <span>SELESAI</span>
+                                    <span class="legend-value">85</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot belum-selesai-dot"></span>
+                                    <span>BELUM SELESAI</span>
+                                    <span class="legend-value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Location Panel -->
+                <div class="location-panel">
+                    <div class="location-header">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>LOKASI GARDU INDUK</span>
+                    </div>
+                    <div class="location-list" id="location-list">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="bottom-row">
+                <!-- Left Status and Location Filters -->
+                <div class="bottom-left-filters">
+                    <!-- Status Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-check-circle"></i>
+                            <span>STATUS</span>
+                        </div>
+                        <div class="status-buttons">
+                            <button class="status-btn belum-selesai-btn" data-status="BELUM SELESAI">BELUM SELESAI</button>
+                            <button class="status-btn selesai-btn" data-status="SELESAI">SELESAI</button>
+                        </div>
+                    </div>
+
+                    <!-- Location Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-building"></i>
+                            <span>LOKASI GI / GIS</span>
+                        </div>
+                        <div class="lokasi-buttons" id="lokasi-buttons">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Bar Chart -->
+                <div class="main-chart-container">
+                    <div class="chart-title">DISTRIBUSI PEMELIHARAAN PER LOKASI</div>
+                    <canvas id="main-chart"></canvas>
+                    <div class="main-chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot anomali-dot"></span>
+                            <span>ANOMALI</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot ganti-mtu-dot"></span>
+                            <span>GANTI MTU</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot non-rutin-dot"></span>
+                            <span>NON RUTIN</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot rutin-dot"></span>
+                            <span>RUTIN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Equipment Panel -->
+                <div class="equipment-panel">
+                    <div class="equipment-list">
+                        <div class="equipment-item">
+                            <span class="equipment-label">IBT</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill ibt-fill" style="width: 20%"></div>
+                                <span class="equipment-value">5</span>
+                            </div>
+                        </div>
+                        <div class="equipment-item">
+                            <span class="equipment-label">TRAFO</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill trafo-fill" style="width: 85%"></div>
+                                <span class="equipment-value">34</span>
+                            </div>
+                        </div>
+                        <div class="equipment-item">
+                            <span class="equipment-label">PMT</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill pmt-fill" style="width: 65%"></div>
+                                <span class="equipment-value">13</span>
+                            </div>
+                        </div>
+                        <div class="equipment-item">
+                            <span class="equipment-label">PMS</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill pms-fill" style="width: 25%"></div>
+                                <span class="equipment-value">5</span>
+                            </div>
+                        </div>
+                        <div class="equipment-item">
+                            <span class="equipment-label">LA</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill la-fill" style="width: 50%"></div>
+                                <span class="equipment-value">10</span>
+                            </div>
+                        </div>
+                        <div class="equipment-item">
+                            <span class="equipment-label">CT</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill ct-fill" style="width: 25%"></div>
+                                <span class="equipment-value">5</span>
+                            </div>
+                        </div>
+                        <div class="equipment-item">
+                            <span class="equipment-label">BAY</span>
+                            <div class="equipment-bar">
+                                <div class="equipment-fill bay-fill" style="width: 78%"></div>
+                                <span class="equipment-value">31</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
+

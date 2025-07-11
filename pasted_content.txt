@@ -1,0 +1,133 @@
+Judul Proyek: Aplikasi Web: Dashboard Interaktif untuk Monitoring Pemeliharaan Gardu Induk (Dashboard HAR GI)
+
+Tujuan Utama:
+Buat sebuah aplikasi web yang fungsional dan interaktif sebagai dashboard real-time untuk memonitor proyek pemeliharaan gardu induk. Aplikasi ini akan menggantikan dashboard manual berbasis Excel. Sumber data utama adalah sebuah Google Sheet yang berada di Google Drive. Aplikasi harus terlihat profesional, cepat, dan mudah digunakan.
+
+1. Sumber Data & Konektivitas
+Tipe Sumber Data: Google Sheets.
+
+URL Google Sheet: [MASUKKAN URL GOOGLE SHEET ANDA YANG DAPAT DIAKSES PUBLIK DI SINI]
+
+Nama Sheet untuk Data Mentah: REALISASI HAR GI
+
+Sheet ini berisi catatan detail semua pekerjaan pemeliharaan.
+
+Kolom-kolom aktual di dalam sheet ini adalah: No, URAIAN PEKERJAAN, BAY / PHT, LOKASI GI / GIS / GITET, SIFAT PEKERJAAN, KATEGORI, RENCANA, BULAN, TAHUN, REALISASI, STATUS.
+
+Penting - Pemetaan Kolom: Saat membuat dashboard, gunakan pemetaan berikut untuk label dan kalkulasi:
+
+KATEGORI -> Tampilkan sebagai "Kategori Peralatan".
+
+BAY / PHT -> Tampilkan sebagai "Lokasi Bay/PHT".
+
+LOKASI GI / GIS / GITET -> Tampilkan sebagai "Gardu Induk".
+
+SIFAT PEKERJAAN -> Tampilkan sebagai "Jenis Pekerjaan".
+
+RENCANA -> Gunakan sebagai "Anggaran (RAB)".
+
+REALISASI -> Gunakan sebagai "Realisasi Biaya".
+
+Sumber Data untuk Filter:
+
+Abaikan sheet drop list. Semua opsi untuk filter harus dibuat secara dinamis dengan mengambil nilai unik langsung dari sheet REALISASI HAR GI.
+
+2. Halaman Utama: Dashboard
+Tata letak harus bersih dan terorganisir menjadi: Header, Panel Filter, Ringkasan KPI, dan Visualisasi.
+
+2.1. Header (Bagian Atas)
+
+Judul: "Dashboard Monitoring Realisasi Pemeliharaan Gardu Induk (HAR GI)".
+
+Sisi kiri: Placeholder untuk Logo.
+
+Sisi kanan: Tanggal dan Waktu Saat Ini.
+
+2.2. Panel Filter (Panel Kontrol)
+
+Panel ini harus ditempatkan secara jelas di bagian atas dashboard.
+
+Buat filter dropdown berikut, ambil data opsinya dari sheet REALISASI HAR GI. Setiap filter harus punya opsi "Semua" sebagai default.
+
+Filter berdasarkan Bulan: Ambil opsi dari nilai unik di kolom BULAN.
+
+Filter berdasarkan Kategori Peralatan: Ambil opsi dari nilai unik di kolom KATEGORI.
+
+Filter berdasarkan Lokasi Bay/PHT: Ambil opsi dari nilai unik di kolom BAY / PHT.
+
+Filter berdasarkan Status: Ambil opsi dari nilai unik di kolom STATUS.
+
+2.3. Ringkasan KPI (Indikator Kinerja Utama)
+
+Tampilkan "kartu" (cards) besar yang diperbarui otomatis berdasarkan filter.
+
+Total Proyek:
+
+Perhitungan: Jumlah total baris yang sesuai dengan filter.
+
+Tampilan: Angka besar dan tebal.
+
+Total Anggaran (RAB):
+
+Perhitungan: Jumlah total dari kolom RENCANA untuk baris yang terfilter.
+
+Tampilan: Format mata uang (Rp). Contoh: "Rp 1.500.000.000".
+
+Total Realisasi:
+
+Perhitungan: Jumlah total dari kolom REALISASI untuk baris yang terfilter.
+
+Tampilan: Format mata uang (Rp).
+
+Tingkat Penyelesaian:
+
+Perhitungan: (Jumlah baris dengan STATUS "Sudah" / Total Proyek) * 100%.
+
+Tampilan: Nilai persentase.
+
+2.4. Visualisasi & Tabel Data
+
+Semua grafik harus interaktif dan merespons filter.
+
+GRAFIK 1: Komposisi Status Pekerjaan
+
+Tipe: Grafik Lingkaran (Donut Chart).
+
+Data: Distribusi proyek berdasarkan kolom STATUS.
+
+Label: Tampilkan jumlah dan persentase untuk setiap status.
+
+GRAFIK 2: Anggaran vs. Realisasi per Kategori Peralatan
+
+Tipe: Grafik Batang Berkelompok (Grouped Bar Chart).
+
+Sumbu X: KATEGORI.
+
+Sumbu Y: Jumlah Total (Rp).
+
+Data: Untuk setiap KATEGORI, tampilkan dua batang: Jumlah RENCANA dan Jumlah REALISASI.
+
+GRAFIK 3: Distribusi Jenis Pekerjaan
+
+Tipe: Grafik Batang Horizontal (Horizontal Bar Chart).
+
+Sumbu Y: SIFAT PEKERJAAN.
+
+Sumbu X: Jumlah Proyek.
+
+Data: Tampilkan jumlah total proyek untuk setiap kategori di SIFAT PEKERJAAN.
+
+TABEL: Detail Pekerjaan
+
+Posisi: Bagian paling bawah.
+
+Kolom yang Ditampilkan (gunakan label yang lebih ramah pengguna): No, Kategori Peralatan (KATEGORI), Lokasi Bay/PHT (BAY / PHT), Gardu Induk (LOKASI GI / GIS / GITET), Bulan (BULAN), Uraian Pekerjaan (URAIAN PEKERJAAN), Jenis Pekerjaan (SIFAT PEKERJAAN), Status (STATUS), Anggaran (RAB) (RENCANA), Realisasi Biaya (REALISASI).
+
+Fungsionalitas: Filter dinamis, penomoran halaman (pagination), kolom pencarian, dan pengurutan (sort) per kolom.
+
+3. Persyaratan Teknis & Pengalaman Pengguna (UX)
+Responsif: Berfungsi sempurna di desktop, tablet, dan seluler.
+
+Performa: Cepat dimuat dan interaksi filter harus instan tanpa memuat ulang halaman.
+
+Gaya Desain: Bersih, modern, profesional, dengan palet warna kontras tinggi untuk kejelasan data.
