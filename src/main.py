@@ -7,7 +7,7 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from src.routes.dashboard import dashboard_bp
 from src.routes.auth import auth_bp
-from src.routes.chatbot import chatbot_bp
+# from src.routes.chatbot import chatbot_bp  # Disabled temporarily
 from src.config import Config
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
@@ -19,7 +19,7 @@ CORS(app, origins=Config.CORS_ORIGINS)
 
 app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
-app.register_blueprint(chatbot_bp)
+# app.register_blueprint(chatbot_bp)  # Disabled temporarily
 
 @app.route('/login')
 def login_page():
