@@ -18,7 +18,8 @@ def get_sample_data():
             "KATEGORI": "TRAFO",
             "BAY / PHT": "BAY 1",
             "BULAN": "January",
-            "TAHUN": "2024"
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARGI"
         },
         {
             "LOKASI GI / GIS / GITET": "GI Jakarta",
@@ -27,7 +28,8 @@ def get_sample_data():
             "KATEGORI": "PMT",
             "BAY / PHT": "BAY 2",
             "BULAN": "February",
-            "TAHUN": "2024"
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARJAR"
         },
         {
             "LOKASI GI / GIS / GITET": "GI Surabaya",
@@ -36,7 +38,8 @@ def get_sample_data():
             "KATEGORI": "CT",
             "BAY / PHT": "BAY 3",
             "BULAN": "March",
-            "TAHUN": "2024"
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARPRO"
         },
         {
             "LOKASI GI / GIS / GITET": "GI Bandung",
@@ -45,7 +48,8 @@ def get_sample_data():
             "KATEGORI": "IBT",
             "BAY / PHT": "BAY 4",
             "BULAN": "April",
-            "TAHUN": "2024"
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARGI"
         },
         {
             "LOKASI GI / GIS / GITET": "GI Jakarta",
@@ -54,7 +58,8 @@ def get_sample_data():
             "KATEGORI": "LA",
             "BAY / PHT": "BAY 5",
             "BULAN": "May",
-            "TAHUN": "2024"
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARJAR"
         },
         {
             "LOKASI GI / GIS / GITET": "GI Surabaya",
@@ -63,7 +68,38 @@ def get_sample_data():
             "KATEGORI": "PMS",
             "BAY / PHT": "BAY 6",
             "BULAN": "June",
-            "TAHUN": "2024"
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARPRO"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Medan",
+            "STATUS": "Selesai",
+            "SIFAT PEKERJAAN": "RUTIN",
+            "KATEGORI": "CVT",
+            "BAY / PHT": "BAY 7",
+            "BULAN": "July",
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARGI"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Palembang",
+            "STATUS": "Progress",
+            "SIFAT PEKERJAAN": "GANTI MTU",
+            "KATEGORI": "PMT",
+            "BAY / PHT": "BAY 8",
+            "BULAN": "August",
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARJAR"
+        },
+        {
+            "LOKASI GI / GIS / GITET": "GI Makassar",
+            "STATUS": "Selesai",
+            "SIFAT PEKERJAAN": "NON RUTIN",
+            "KATEGORI": "LA",
+            "BAY / PHT": "BAY 9",
+            "BULAN": "September",
+            "TAHUN": "2024",
+            "SUB BIDANG": "HARPRO"
         }
     ]
     

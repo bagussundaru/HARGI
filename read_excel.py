@@ -15,7 +15,7 @@ def read_excel_sheets(file_path):
     
     return all_sheet_data
 
-file_path = '/home/ubuntu/upload/DASHBOARDHARGI.xlsx'
+file_path = 'DASHBOARDHARGI.xlsx'
 sheet_data = read_excel_sheets(file_path)
 
 # Print more rows for 'REALISASI HAR GI' and 'drop list' sheets
