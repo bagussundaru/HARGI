@@ -1,3 +1,7 @@
+# Vercel serverless function entry point
+# This file serves as the main entry point for Vercel deployment
+# Updated to force new deployment
+
 from flask import Flask
 import sys
 import os
