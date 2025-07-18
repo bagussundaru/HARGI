@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring Pemeliharaan Gardu Induk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- User Header -->
+        <div class="user-header">
+            <div class="user-info">
+                <span id="user-welcome" class="pln-indonesia-text">Dashboard Pemeliharaan ULTGBDBT</span>
+            </div>
+            <!-- Animated Logo Section -->
+            <div class="logo-animation-container">
+                <div class="logo-slider">
+                    <div class="logo-left">
+                        <div class="logo-item">
+                            <img src="logo/pln_logo.svg" alt="PLN Logo" class="animated-logo">
+                        </div>
+                        <div class="logo-item">
+                            <img src="logo/bandungtimur.svg" alt="Bandung Timur Logo" class="animated-logo">
+                        </div>
+                    </div>
+                    <div class="logo-right">
+                        <div class="logo-item">
+                            <img src="logo/danantara.svg" alt="Danantara Logo" class="animated-logo">
+                        </div>
+                        <div class="logo-item">
+                            <img src="logo/plnmobile.svg" alt="PLN Mobile Logo" class="animated-logo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Header with KPI Cards -->
+        <header class="top-header">
+            <div class="kpi-header-cards">
+                <div class="kpi-card anomali-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="kpi-label">ANOMALI</div>
+                    <div class="kpi-value" id="header-anomali">15</div>
+                </div>
+                <div class="kpi-card ganti-mtu-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="kpi-label">GANTI MTU</div>
+                    <div class="kpi-value" id="header-ganti-mtu">5</div>
+                </div>
+                <div class="kpi-card rutin-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="kpi-label">RUTIN</div>
+                    <div class="kpi-value" id="header-rutin">45</div>
+                </div>
+                <div class="kpi-card non-rutin-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="kpi-label">NON RUTIN</div>
+                    <div class="kpi-value" id="header-non-rutin">24</div>
+                </div>
+                <div class="kpi-card total-har-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="kpi-label">TOTAL HAR</div>
+                    <div class="kpi-value" id="header-total-har">89</div>
+                </div>
+                <div class="kpi-card total-gi-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="kpi-label">TOTAL LOK</div>
+                    <div class="kpi-value" id="header-total">12</div>
+                </div>
+                <div class="kpi-card progress-card">
+                    <div class="progress-circle">
+                        <canvas id="progress-chart" width="60" height="60"></canvas>
+                        <div class="progress-text">
+                            <span id="progress-percentage">97%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="kpi-card ultg-card">
+                    <div class="ultg-content">
+                        <div class="ultg-label">Dashboard Pemeliharaan ULTGBDBT</div>
+                        <div class="ultg-datetime" id="ultg-datetime">1 Juli 2025 pukul 14.00 WIB</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Top Row -->
+            <div class="top-row">
+                <!-- Left Filters Panel -->
+                <div class="filters-panel">
+                    <!-- Year Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>TAHUN</span>
+                        </div>
+                        <div class="year-buttons">
+                            <button class="year-btn active" data-year="2024">2024</button>
+                            <button class="year-btn" data-year="2025">2025</button>
+                        </div>
+                    </div>
+
+                    <!-- Sifat Pekerjaan Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-tasks"></i>
+                            <span>SIFAT PEKERJAAN</span>
+                        </div>
+                        <div class="sifat-buttons">
+                            <button class="sifat-btn active" data-sifat="">SEMUA</button>
+                            <button class="sifat-btn anomali-btn" data-sifat="ANOMALI">ANOMALI</button>
+                            <button class="sifat-btn ganti-mtu-btn" data-sifat="GANTI MTU">GANTI MTU</button>
+                            <button class="sifat-btn non-rutin-btn" data-sifat="NON RUTIN">NON RUTIN</button>
+                            <button class="sifat-btn rutin-btn" data-sifat="RUTIN">RUTIN</button>
+                        </div>
+                    </div>
+
+                    <!-- Sub Bid Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-sitemap"></i>
+                            <span>SUB BID</span>
+                        </div>
+                        <div class="sub-bid-buttons">
+                            <button class="sub-bid-btn active" data-sub-bid="">SEMUA</button>
+                            <button class="sub-bid-btn hargi-btn" data-sub-bid="HARGI">HARGI</button>
+                            <button class="sub-bid-btn harjar-btn" data-sub-bid="HARJAR">HARJAR</button>
+                            <button class="sub-bid-btn harpro-btn" data-sub-bid="HARPRO">HARPRO</button>
+                        </div>
+                    </div>
+
+                    <!-- Month Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-calendar"></i>
+                            <span>BULAN</span>
+                        </div>
+                        <div class="month-grid">
+                            <button class="month-btn active" data-month="">Semua</button>
+                            <button class="month-btn" data-month="January">January</button>
+                            <button class="month-btn" data-month="February">February</button>
+                            <button class="month-btn" data-month="March">March</button>
+                            <button class="month-btn" data-month="April">April</button>
+                            <button class="month-btn" data-month="May">May</button>
+                            <button class="month-btn" data-month="June">June</button>
+                            <button class="month-btn" data-month="July">July</button>
+                            <button class="month-btn" data-month="August">August</button>
+                            <button class="month-btn" data-month="September">September</button>
+                            <button class="month-btn" data-month="October">October</button>
+                            <button class="month-btn" data-month="November">November</button>
+                            <button class="month-btn" data-month="December">December</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Charts -->
+                <div class="center-charts">
+                    <!-- Top Pie Chart -->
+                    <div class="pie-chart-container">
+                        <div class="chart-title">JENIS PEMELIHARAAN</div>
+                        <div class="chart-content">
+                            <canvas id="jenis-chart" class="chart-canvas"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot rutin-dot"></span>
+                                    <span>RUTIN</span>
+                                    <span class="legend-value">50%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot anomali-dot"></span>
+                                    <span>ANOMALI</span>
+                                    <span class="legend-value">27%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot ganti-mtu-dot"></span>
+                                    <span>GANTI MTU</span>
+                                    <span class="legend-value">23%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Pie Chart -->
+                    <div class="pie-chart-container">
+                        <div class="chart-title">STATUS PEKERJAAN</div>
+                        <div class="chart-content">
+                        <canvas id="status-chart" class="chart-canvas"></canvas>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot selesai-dot"></span>
+                                <span>SELESAI</span>
+                                <span class="legend-value">85</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot belum-selesai-dot"></span>
+                                <span>BELUM SELESAI</span>
+                                <span class="legend-value">4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+
+                <!-- Right Location Panel -->
+                <div class="location-panel">
+                    <div class="location-header">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>LOKASI GARDU INDUK</span>
+                    </div>
+                    <div class="location-list" id="location-list">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="bottom-row">
+                <!-- Left Status and Location Filters -->
+                <div class="bottom-left-filters">
+                    <!-- Status Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-check-circle"></i>
+                            <span>STATUS</span>
+                        </div>
+                        <div class="status-buttons">
+                            <button class="status-btn active" data-status="">SEMUA</button>
+                            <button class="status-btn belum-selesai-btn" data-status="BELUM SELESAI">BELUM SELESAI</button>
+                            <button class="status-btn selesai-btn" data-status="SELESAI">SELESAI</button>
+                        </div>
+                    </div>
+
+                    <!-- Location Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <i class="fas fa-building"></i>
+                            <span>LOKASI GI / GIS</span>
+                        </div>
+                        <div class="lokasi-buttons" id="lokasi-buttons">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Bar Chart -->
+                <div class="main-chart-container">
+                    <div class="chart-title">DISTRIBUSI PEMELIHARAAN PER LOKASI</div>
+                    <canvas id="main-chart"></canvas>
+                    <div class="main-chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot anomali-dot"></span>
+                            <span>ANOMALI</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot ganti-mtu-dot"></span>
+                            <span>GANTI MTU</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot non-rutin-dot"></span>
+                            <span>NON RUTIN</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot rutin-dot"></span>
+                            <span>RUTIN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Equipment Panel -->
+                <div class="equipment-panel">
+                    <div class="equipment-header">
+                        <i class="fas fa-cogs"></i>
+                        <span>DISTRIBUSI EQUIPMENT</span>
+                    </div>
+                    <div class="equipment-chart-container">
+                        <canvas id="equipment-chart" class="equipment-chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Stacked Chart Row -->
+            <div class="stacked-chart-row">
+                <div class="stacked-chart-container">
+                    <div class="chart-title">DISTRIBUSI PEKERJAAN PER URAIAN (STACKED)</div>
+                    <canvas id="custom-stacked-chart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Sub Bid Chart Row -->
+            <div class="sub-bid-chart-row">
+                <div class="sub-bid-chart-container">
+                    <div class="chart-title">DISTRIBUSI PEKERJAAN PER SUB BID</div>
+                    <canvas id="sub-bid-chart"></canvas>
+                    <div class="sub-bid-chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot hargi-dot"></span>
+                            <span>HARGI</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot harjar-dot"></span>
+                            <span>HARJAR</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot harpro-dot"></span>
+                            <span>HARPRO</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Small Info Box - Bottom Right -->
+        <div class="info-box" id="info-box">
+            <div class="info-box-header">
+                <div class="header-left">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Info</span>
+                </div>
+                <button class="box-toggle-btn" onclick="toggleBox('info-box')">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <div class="info-box-content">
+                <div class="info-item">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value online">Online</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Update:</span>
+                    <span class="info-value">Real-time</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Actions Box - Bottom Left -->
+        <div class="user-actions-box" id="user-actions-box">
+            <div class="user-actions-header">
+                <div class="header-left">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Actions</span>
+                </div>
+                <button class="box-toggle-btn" onclick="toggleBox('user-actions-box')">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <div class="user-actions-content">
+                <span id="admin-link" class="action-link" style="display: none;">
+                    <a href="/admin">
+                        <i class="fas fa-cog"></i> Admin Panel
+                    </a>
+                </span>
+                <button id="logout-btn" class="action-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="dashboard.js"></script>
+    
+    <style>
+        .user-header {
+            background: #fff;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .user-info {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .logout-btn i {
+            font-size: 0.8rem;
+        }
+    </style>
+    
+    <script>
+        // Authentication check
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                    return false;
+                }
+                
+                // Keep PLN Indonesia text - no need to update
+                // document.getElementById('user-welcome').textContent = 
+                //     `Welcome, ${data.user.username} (${data.user.role})`;
+                
+                // Show admin link if user is admin
+                if (data.user.role === 'admin') {
+                    document.getElementById('admin-link').style.display = 'inline';
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login';
+                return false;
+            }
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Logout failed:', error);
+                window.location.href = '/login';
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('logout-btn').addEventListener('click', logout);
+        
+        // Toggle box visibility
+        function toggleBox(boxId) {
+            const box = document.getElementById(boxId);
+            const toggleBtn = box.querySelector('.box-toggle-btn i');
+            
+            if (box.classList.contains('collapsed')) {
+                box.classList.remove('collapsed');
+                toggleBtn.className = 'fas fa-minus';
+            } else {
+                box.classList.add('collapsed');
+                toggleBtn.className = 'fas fa-plus';
+            }
+        }
+        
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuthenticated = await checkAuth();
+            if (isAuthenticated) {
+                // Initialize dashboard only if authenticated
+                if (typeof initializeDashboard === 'function') {
+                    initializeDashboard();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

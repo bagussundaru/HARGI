@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stacked Bar Chart Demo - Distribusi Jenis Pekerjaan per Lokasi</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chart-container {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        h2 {
+            text-align: center;
+            color: #cccccc;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 500px;
+            width: 100%;
+        }
+        .info-panel {
+            background-color: #333333;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-panel h3 {
+            color: #ffffff;
+            margin-top: 0;
+        }
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .legend-text {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .chart-container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .color-legend {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Distribusi Jenis Pekerjaan per Lokasi</h1>
+        
+        <div class="info-panel">
+            <h3>Spesifikasi Chart:</h3>
+            <ul>
+                <li>✅ Stacked Bar Chart menggunakan Chart.js</li>
+                <li>✅ Background hitam, teks putih</li>
+                <li>✅ 4 kategori pekerjaan dengan warna berbeda</li>
+                <li>✅ Label jumlah di atas setiap bar</li>
+                <li>✅ Legend jelas di atas chart</li>
+                <li>✅ Label lokasi miring 45 derajat</li>
+                <li>✅ Responsif dan proporsional</li>
+            </ul>
+        </div>
+
+        <div class="color-legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ff4757;"></div>
+                <span class="legend-text">ANOMALI (Merah)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #747d8c;"></div>
+                <span class="legend-text">GANTI MTU (Abu-abu)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #b8860b;"></div>
+                <span class="legend-text">NON RUTIN (Kuning Tua)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f1c40f;"></div>
+                <span class="legend-text">RUTIN (Kuning Muda)</span>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>Stacked Bar Chart - Jenis Pekerjaan per Lokasi</h2>
+            <div class="chart-wrapper">
+                <canvas id="custom-stacked-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register the datalabels plugin
+        Chart.register(ChartDataLabels);
+        
+        // Sample data as requested
+        const sampleData = {
+            'BANDUNG TIMUR': { 'ANOMALI': 2, 'GANTI MTU': 0, 'NON RUTIN': 0, 'RUTIN': 10 },
+            'SUMEDANG': { 'ANOMALI': 0, 'GANTI MTU': 10, 'NON RUTIN': 0, 'RUTIN': 0 },
+            'TASIK': { 'ANOMALI': 2, 'GANTI MTU': 0, 'NON RUTIN': 3, 'RUTIN': 11 }
+        };
+        
+        function createCustomStackedChart() {
+            const canvas = document.getElementById('custom-stacked-chart');
+            const ctx = canvas.getContext('2d');
+            
+            const locations = Object.keys(sampleData);
+            const anomaliData = locations.map(loc => sampleData[loc]['ANOMALI'] || 0);
+            const gantiMtuData = locations.map(loc => sampleData[loc]['GANTI MTU'] || 0);
+            const nonRutinData = locations.map(loc => sampleData[loc]['NON RUTIN'] || 0);
+            const rutinData = locations.map(loc => sampleData[loc]['RUTIN'] || 0);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: locations,
+                    datasets: [
+                        {
+                            label: 'ANOMALI',
+                            data: anomaliData,
+                            backgroundColor: '#ff4757',
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'GANTI MTU',
+                            data: gantiMtuData,
+                            backgroundColor: '#747d8c',
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'NON RUTIN',
+                            data: nonRutinData,
+                            backgroundColor: '#b8860b',
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'RUTIN',
+                            data: rutinData,
+                            backgroundColor: '#f1c40f',
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuart',
+                        delay: (context) => {
+                            return context.dataIndex * 200;
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 20,
+                            top: 50,
+                            bottom: 10
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 14,
+                                    weight: '500'
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                lineWidth: 1
+                            },
+                            border: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                lineWidth: 1
+                            },
+                            border: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'center',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 16,
+                                    weight: '600'
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'rect'
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            padding: 15,
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return `📍 ${context[0].label}`;
+                                },
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y;
+                                    return `${label}: ${value} pekerjaan`;
+                                },
+                                afterBody: function(context) {
+                                    const total = context.reduce((sum, item) => sum + item.parsed.y, 0);
+                                    return [`\n📊 Total: ${total} pekerjaan`];
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: true,
+                            color: '#ffffff',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            formatter: function(value, context) {
+                                return value > 0 ? value : '';
+                            },
+                            anchor: 'center',
+                            align: 'center',
+                            textStrokeColor: '#000000',
+                            textStrokeWidth: 1
+                        }
+                    },
+                    onHover: (event, activeElements) => {
+                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                    }
+                }
+            });
+        }
+        
+        // Initialize chart when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createCustomStackedChart();
+        });
+    </script>
+</body>
+</html>
