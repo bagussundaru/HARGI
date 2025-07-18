@@ -173,20 +173,13 @@ def apply_filters(data, filters):
     # Filter by Sub Bid
     if filters.get("sub_bid") and filters["sub_bid"] != "":
         def get_sub_bid_from_item(item):
-            lokasi = item.get("LOKASI GI / GIS / GITET", "")
-            sifat = item.get("SIFAT PEKERJAAN", "")
+            # Use actual SUB BIDANG column from Excel data
+            sub_bidang = item.get("SUB BIDANG", "")
+            if sub_bidang:
+                return sub_bidang.upper().strip()
             
-            if "Bandung" in lokasi or sifat == "RUTIN":
-                return "HARGI"
-            elif "Jakarta" in lokasi or sifat == "ANOMALI":
-                return "HARJAR"
-            elif "Surabaya" in lokasi or sifat in ["GANTI MTU", "NON RUTIN"]:
-                return "HARPRO"
-            
-            # Default assignment based on hash of location
-            hash_val = sum(ord(c) for c in lokasi) if lokasi else 0
-            sub_bids = ["HARGI", "HARJAR", "HARPRO"]
-            return sub_bids[hash_val % 3]
+            # Fallback to default if SUB BIDANG is empty
+            return "HARGI"
         
         filtered_data = [item for item in filtered_data if get_sub_bid_from_item(item) == filters["sub_bid"]]
     
@@ -361,22 +354,14 @@ def get_sub_bid_distribution_data():
         }
         filtered_data = apply_filters(realisasi_data, filters)
 
-        # Simulate Sub Bid assignment based on location or work type
+        # Use actual SUB BIDANG column from Excel data
         def get_sub_bid_from_item(item):
-            lokasi = item.get("LOKASI GI / GIS / GITET", "")
-            sifat = item.get("SIFAT PEKERJAAN", "")
+            sub_bidang = item.get("SUB BIDANG", "")
+            if sub_bidang:
+                return sub_bidang.upper().strip()
             
-            if "Bandung" in lokasi or sifat == "RUTIN":
-                return "HARGI"
-            elif "Jakarta" in lokasi or sifat == "ANOMALI":
-                return "HARJAR"
-            elif "Surabaya" in lokasi or sifat in ["GANTI MTU", "NON RUTIN"]:
-                return "HARPRO"
-            
-            # Default assignment based on hash of location
-            hash_val = sum(ord(c) for c in lokasi) if lokasi else 0
-            sub_bids = ["HARGI", "HARJAR", "HARPRO"]
-            return sub_bids[hash_val % 3]
+            # Fallback to default if SUB BIDANG is empty
+            return "HARGI"
 
         sub_bid_counts = defaultdict(int)
         for item in filtered_data:

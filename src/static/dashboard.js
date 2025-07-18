@@ -199,28 +199,16 @@ function applyFilters() {
     updateDashboard();
 }
 
-// Get Sub Bid from item (simulate based on location or other criteria)
+// Get Sub Bid from item using actual SUB BIDANG column
 function getSubBidFromItem(item) {
-    const lokasi = item['LOKASI GI / GIS / GITET'] || item.lokasi || '';
-    const sifat = item['SIFAT PEKERJAAN'] || item.sifat_pekerjaan || '';
-    
-    // Simulate Sub Bid assignment based on location or work type
-    if (lokasi.includes('Bandung') || sifat === 'RUTIN') {
-        return 'HARGI';
-    } else if (lokasi.includes('Jakarta') || sifat === 'ANOMALI') {
-        return 'HARJAR';
-    } else if (lokasi.includes('Surabaya') || sifat === 'GANTI MTU' || sifat === 'NON RUTIN') {
-        return 'HARPRO';
+    // Use actual SUB BIDANG column from Excel data
+    const subBidang = item['SUB BIDANG'] || item.sub_bidang || '';
+    if (subBidang) {
+        return subBidang.toUpperCase().trim();
     }
     
-    // Default assignment based on hash of location
-    const hash = lokasi.split('').reduce((a, b) => {
-        a = ((a << 5) - a) + b.charCodeAt(0);
-        return a & a;
-    }, 0);
-    
-    const subBids = ['HARGI', 'HARJAR', 'HARPRO'];
-    return subBids[Math.abs(hash) % 3];
+    // Fallback to default if SUB BIDANG is empty
+    return 'HARGI';
 }
 
 // Update dashboard with filtered data
