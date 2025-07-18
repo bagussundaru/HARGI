@@ -1,0 +1,34 @@
+# Development files
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# Local development files
+check_*.py
+debug_*.py
+read_excel.py
+pasted_content.txt
+
+# Documentation
+*.md
+todo.md
+design_analysis.md
+
+# Scripts
+start_dashboard.bat
+start_dashboard.sh
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore

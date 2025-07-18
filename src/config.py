@@ -16,8 +16,10 @@ class Config:
         """Dynamically find Excel file in multiple locations"""
         possible_paths = [
             Config.EXCEL_FILE_PATH,  # Default configured path
-            'D:\\DASHBOARDHARGI.xlsx',  # Primary location
-            'D:\\DASHBOARDHARGI2.xlsx',  # Alternative location
+            'DASHBOARDHARGI.xlsx',  # Project root (for Vercel)
+            './DASHBOARDHARGI.xlsx',  # Relative path (for Vercel)
+            'D:\\DASHBOARDHARGI.xlsx',  # Primary location (local)
+            'D:\\DASHBOARDHARGI2.xlsx',  # Alternative location (local)
             os.path.join(os.path.dirname(os.path.dirname(__file__)), 'DASHBOARDHARGI.xlsx'),  # Project root
             os.path.join(os.path.dirname(os.path.dirname(__file__)), 'DASHBOARDHARGI2.xlsx'),  # Project root alternative
             os.path.join(os.getcwd(), 'DASHBOARDHARGI.xlsx'),  # Current working directory

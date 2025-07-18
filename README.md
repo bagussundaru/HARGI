@@ -69,30 +69,41 @@ pip install -r requirements.txt
 
 1. **Persiapan Repository**
    - Pastikan semua file sudah di-commit ke GitHub
-   - File `vercel.json` dan `api/index.py` sudah tersedia
+   - File `DASHBOARDHARGI.xlsx` sudah ada di root project
+   - File `vercel.json`, `runtime.txt`, dan `api/index.py` sudah tersedia
 
 2. **Deploy ke Vercel**
    - Buka [vercel.com](https://vercel.com)
    - Login dengan akun GitHub
    - Import repository `bagussundaru/HARGI`
-   - Vercel akan otomatis mendeteksi konfigurasi
+   - Vercel akan otomatis mendeteksi konfigurasi Python
 
-3. **Environment Variables (Opsional)**
-   Di dashboard Vercel, tambahkan environment variables:
-   ```
-   FLASK_DEBUG=false
-   SECRET_KEY=your-production-secret-key
-   CORS_ORIGINS=https://yourdomain.vercel.app
+3. **Environment Variables (Sudah Dikonfigurasi)**
+   Environment variables sudah dikonfigurasi di `vercel.json`:
+   ```json
+   {
+     "FLASK_DEBUG": "false",
+     "SECRET_KEY": "production-secret-key-hargi-dashboard-2024",
+     "CORS_ORIGINS": "*",
+     "EXCEL_FILE_PATH": "./DASHBOARDHARGI.xlsx"
+   }
    ```
 
-4. **Catatan Penting untuk Deployment**
-   - Excel file tidak akan tersedia di Vercel (cloud environment)
-   - Aplikasi akan menggunakan sample data untuk demo
-   - Untuk data real-time, pertimbangkan menggunakan database cloud
+4. **Fitur Deployment**
+   - ✅ Excel file tersedia di Vercel (sudah di-bundle)
+   - ✅ Data real dari Excel file, bukan sample data
+   - ✅ Timeout function 30 detik untuk processing Excel
+   - ✅ Optimized dengan `.vercelignore`
+   - ✅ Python 3.9 runtime
 
 5. **URL Deployment**
    Setelah deploy berhasil, aplikasi akan tersedia di:
    `https://your-project-name.vercel.app`
+
+6. **Troubleshooting Deployment**
+   - Jika deployment gagal, cek Vercel logs
+   - Pastikan `DASHBOARDHARGI.xlsx` ada di root project
+   - Verifikasi semua dependencies di `requirements.txt`
 
 ## Konfigurasi Data
 
