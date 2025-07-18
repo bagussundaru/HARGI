@@ -19,7 +19,7 @@ CORS(app, origins=Config.CORS_ORIGINS)
 
 app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
-app.register_blueprint(chatbot_bp, url_prefix='/api')
+app.register_blueprint(chatbot_bp)
 
 @app.route('/login')
 def login_page():
