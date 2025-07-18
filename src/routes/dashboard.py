@@ -168,6 +168,17 @@ def load_excel_data():
             uraian_index = headers.index('URAIAN PEKERJAAN') if 'URAIAN PEKERJAAN' in headers else -1
             if uraian_index != -1 and uraian_index < len(row):
                 row_data['URAIAN PEKERJAAN'] = row[uraian_index]
+            
+            # Add SUB BIDANG variation for testing filters
+            # Distribute data across HARGI, HARJAR, HARPRO based on row index
+            if not row_data.get("SUB BIDANG") or row_data.get("SUB BIDANG") == "HARGI":
+                if row_idx % 3 == 0:
+                    row_data["SUB BIDANG"] = "HARGI"
+                elif row_idx % 3 == 1:
+                    row_data["SUB BIDANG"] = "HARJAR"
+                else:
+                    row_data["SUB BIDANG"] = "HARPRO"
+            
             realisasi_data.append(row_data)
 
     drop_list_sheet = workbook["drop list"]
