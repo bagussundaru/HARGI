@@ -92,27 +92,18 @@ def serve(path):
 
 
 if __name__ == '__main__':
-    # Debug Excel file connection
-    print("=== DEBUGGING EXCEL FILE CONNECTION ===")
-    excel_path = Config.find_excel_file()
-    print(f"Excel file path found: {excel_path}")
-    if excel_path:
-        print(f"File exists: {os.path.exists(excel_path)}")
-        print(f"File size: {os.path.getsize(excel_path) if os.path.exists(excel_path) else 'N/A'} bytes")
-    else:
-        print("No Excel file found in any configured location")
-        print("Configured paths:")
-        possible_paths = [
-            Config.EXCEL_FILE_PATH,
-            'D:\\DASHBOARDHARGI.xlsx',
-            'D:\\DASHBOARDHARGI2.xlsx',
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'DASHBOARDHARGI.xlsx'),
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'DASHBOARDHARGI2.xlsx'),
-            os.path.join(os.getcwd(), 'DASHBOARDHARGI.xlsx'),
-            os.path.join(os.getcwd(), 'DASHBOARDHARGI2.xlsx'),
-        ]
-        for path in possible_paths:
-            print(f"  {path} - Exists: {os.path.exists(path)}")
-    print("===========================================")
+    # Debug Excel file connection (only in local development)
+    try:
+        print("=== DEBUGGING EXCEL FILE CONNECTION ===")
+        excel_path = Config.find_excel_file()
+        print(f"Excel file path found: {excel_path}")
+        if excel_path:
+            print(f"File exists: {os.path.exists(excel_path)}")
+            print(f"File size: {os.path.getsize(excel_path) if os.path.exists(excel_path) else 'N/A'} bytes")
+        else:
+            print("No Excel file found in any configured location")
+        print("===========================================")
+    except Exception as e:
+        print(f"Debug error (non-critical): {e}")
     
     app.run(host='0.0.0.0', port=5000, debug=True)
