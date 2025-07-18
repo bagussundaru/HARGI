@@ -20,6 +20,7 @@
     "FLASK_DEBUG": "false",
     "SECRET_KEY": "production-secret-key-hargi-dashboard-2024",
     "CORS_ORIGINS": "*",
-    "EXCEL_FILE_PATH": "./DASHBOARDHARGI.xlsx"
+    "EXCEL_FILE_PATH": "./DASHBOARDHARGI.xlsx",
+    "NEBIUS_API_KEY": "@nebius_api_key"
   }
 }

@@ -8,8 +8,10 @@ import requests
 
 chatbot_bp = Blueprint('chatbot', __name__)
 
-# Konfigurasi Nebius AI API
-NEBIUS_API_KEY = "eyJhbGciOiJIUzI1NiIsImtpZCI6IlV6SXJWd1h0dnprLVRvdzlLZWstc0M1akptWXBvX1VaVkxUZlpnMDRlOFUiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJnb29nbGUtb2F1dGgyfDExNDE3OTYwNTEwMjcyNDQ2MjIxNyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIiwiaXNzIjoiYXBpX2tleV9pc3N1ZXIiLCJhdWQiOlsiaHR0cHM6Ly9uZWJpdXMtaW5mZXJlbmNlLmV1LmF1dGgwLmNvbS9hcGkvdjIvIl0sImV4cCI6MTkxMDQ4OTk5NywidXVpZCI6ImRiYTFiMzM5LWUzYTctNGE0Zi04ODVjLWIzNTc2ZTIxMzM0MiIsIm5hbWUiOiJjaGF0Ym90IiwiZXhwaXJlc19hdCI6IjIwMzAtMDctMTdUMDM6Mzk6NTcrMDAwMCJ9.SsDwbCSdA2iA8elng2j5pCjpJJIdmBFW4h5juK1sY7U"
+import os
+
+# Konfigurasi Nebius AI API - menggunakan environment variable untuk keamanan
+NEBIUS_API_KEY = os.getenv('NEBIUS_API_KEY')
 NEBIUS_API_URL = "https://api.studio.nebius.ai/v1/chat/completions"
 NEBIUS_MODEL = "meta-llama/Meta-Llama-3.1-70B-Instruct"
 
@@ -18,6 +20,9 @@ def call_nebus_ai(prompt, context_data=None):
     Panggilan ke Nebius AI API dengan model Meta-Llama-3.1-70B-Instruct
     """
     try:
+        # Validasi API key
+        if not NEBIUS_API_KEY:
+            return "Maaf, layanan chatbot sedang tidak tersedia. API key tidak dikonfigurasi."
         # Siapkan konteks data untuk AI
         context_info = ""
         if context_data is not None and not context_data.empty:

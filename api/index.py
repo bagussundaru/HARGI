@@ -5,8 +5,20 @@ import os
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from main import app
+try:
+    from main import app
+except ImportError as e:
+    print(f"Import error: {e}")
+    # Fallback app jika import gagal
+    app = Flask(__name__)
+    
+    @app.route('/')
+    def hello():
+        return "HAR GI Dashboard - Import Error"
 
 # This is the entry point for Vercel
 if __name__ == '__main__':
     app.run()
+else:
+    # Untuk Vercel deployment
+    application = app
