@@ -27,21 +27,41 @@ def call_nebus_ai(prompt, context_data=None):
             
             if 'STATUS' in context_data.columns:
                 status_counts = context_data['STATUS'].value_counts().to_dict()
-                context_info += f"Status: {dict(list(status_counts.items())[:3])}. "
+                context_info += f"Status: {dict(list(status_counts.items())[:5])}. "
             
-            if 'LOKASI' in context_data.columns:
-                lokasi_counts = context_data['LOKASI'].value_counts().head(3).to_dict()
-                context_info += f"Top lokasi: {dict(list(lokasi_counts.items())[:3])}. "
+            if 'LOKASI GI / GIS / GITET' in context_data.columns:
+                lokasi_counts = context_data['LOKASI GI / GIS / GITET'].value_counts().head(5).to_dict()
+                context_info += f"Top lokasi: {dict(list(lokasi_counts.items())[:5])}. "
+            
+            if 'TAHUN' in context_data.columns:
+                tahun_counts = context_data['TAHUN'].value_counts().to_dict()
+                context_info += f"Distribusi tahun: {dict(list(tahun_counts.items())[:3])}. "
+            
+            if 'KATEGORI' in context_data.columns:
+                kategori_counts = context_data['KATEGORI'].value_counts().head(3).to_dict()
+                context_info += f"Kategori: {dict(list(kategori_counts.items())[:3])}. "
+            
+            if 'SUB BIDANG' in context_data.columns:
+                sub_bidang_counts = context_data['SUB BIDANG'].value_counts().to_dict()
+                context_info += f"Sub bidang: {dict(list(sub_bidang_counts.items())[:3])}. "
         
         # Buat system prompt untuk AI
         system_prompt = f"""Anda adalah asisten AI untuk Dashboard HAR GI (Hasil Akhir Rencana Gardu Induk) PLN. 
-Anda membantu menganalisis data proyek gardu induk.
+Anda membantu menganalisis data proyek gardu induk dengan informasi berikut:
 
 {context_info}
 
-Jawab pertanyaan user dengan informatif dan akurat berdasarkan data yang tersedia. 
-Gunakan bahasa Indonesia yang profesional dan mudah dipahami.
-Jika data tidak tersedia, berikan penjelasan yang membantu."""
+Anda dapat menjawab pertanyaan tentang:
+- Total proyek dan distribusi status (SELESAI/BELUM SELESAI)
+- Lokasi gardu induk (kolom: LOKASI GI / GIS / GITET)
+- Distribusi proyek per tahun (kolom: TAHUN)
+- Kategori pekerjaan (kolom: KATEGORI)
+- Sub bidang (kolom: SUB BIDANG)
+- Sifat pekerjaan (kolom: SIFAT PEKERJAAN)
+- Analisis timeline rencana vs realisasi
+
+Jawab dengan data spesifik dan angka yang akurat. Gunakan bahasa Indonesia yang profesional.
+Jika user menanyakan data yang tidak tersedia, jelaskan kolom data apa saja yang tersedia."""
         
         # Siapkan payload untuk API Nebius
         payload = {
@@ -94,14 +114,34 @@ def load_excel_data_for_chatbot():
             df = pd.read_excel(excel_file, sheet_name='REALISASI HAR GI', header=4)
             # Clean column names
             df.columns = df.columns.str.strip()
+            
+            # Clean data - remove rows with all NaN values
+            df = df.dropna(how='all')
+            
+            # Convert date columns if they exist
+            if 'RENCANA' in df.columns:
+                df['RENCANA'] = pd.to_datetime(df['RENCANA'], errors='coerce')
+            if 'REALISASI' in df.columns:
+                df['REALISASI'] = pd.to_datetime(df['REALISASI'], errors='coerce')
+            
+            # Clean text columns
+            text_columns = ['LOKASI GI / GIS / GITET', 'STATUS', 'KATEGORI', 'SUB BIDANG', 'SIFAT PEKERJAAN']
+            for col in text_columns:
+                if col in df.columns:
+                    df[col] = df[col].astype(str).str.strip().str.upper()
+            
+            print(f"Successfully loaded {len(df)} records from Excel")
             return df
         else:
+            print("Excel file not found, using sample data")
             # Return sample data jika Excel tidak ditemukan
             return pd.DataFrame({
                 'RENCANA': ['2024-01-15', '2024-02-20', '2024-03-10'],
-                'LOKASI': ['Jakarta', 'Bandung', 'Surabaya'],
-                'STATUS': ['Selesai', 'Dalam Proses', 'Perencanaan'],
-                'KATEGORI': ['Pembangunan', 'Pemeliharaan', 'Upgrade']
+                'LOKASI GI / GIS / GITET': ['GI JAKARTA', 'GI BANDUNG', 'GI SURABAYA'],
+                'STATUS': ['SELESAI', 'BELUM SELESAI', 'SELESAI'],
+                'KATEGORI': ['BAY PHT PHT', 'BAY BAY TRAFO', 'BAY PHT PHT'],
+                'TAHUN': [2024, 2024, 2024],
+                'SUB BIDANG': ['HARGI', 'HARGI', 'HARGI']
             })
     except Exception as e:
         print(f"Error loading Excel data: {e}")
@@ -113,6 +153,13 @@ def chatbot_response():
     Endpoint untuk menerima pesan dari user dan memberikan respons AI
     """
     try:
+        # Validate request
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Request harus berformat JSON'
+            }), 400
+        
         data = request.get_json()
         user_message = data.get('message', '').strip()
         
@@ -122,19 +169,34 @@ def chatbot_response():
                 'error': 'Pesan tidak boleh kosong'
             }), 400
         
+        print(f"Chatbot request: {user_message}")
+        
         # Load data Excel untuk konteks
         excel_data = load_excel_data_for_chatbot()
         
-        # Panggil Nebus AI (simulasi)
+        if excel_data is None:
+            return jsonify({
+                'success': False,
+                'error': 'Gagal memuat data Excel. Silakan coba lagi.'
+            }), 500
+        
+        # Panggil Nebius AI
         ai_response = call_nebus_ai(user_message, excel_data)
+        
+        print(f"AI response: {ai_response[:100]}...")
         
         return jsonify({
             'success': True,
             'response': ai_response,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'data_info': {
+                'total_records': len(excel_data) if excel_data is not None else 0,
+                'columns_available': list(excel_data.columns) if excel_data is not None else []
+            }
         })
     
     except Exception as e:
+        print(f"Chatbot error: {str(e)}")
         return jsonify({
             'success': False,
             'error': f'Terjadi kesalahan: {str(e)}'
@@ -147,11 +209,15 @@ def get_suggestions():
     """
     suggestions = [
         "Berapa total proyek HAR GI?",
-        "Bagaimana status proyek saat ini?",
-        "Lokasi mana yang memiliki proyek terbanyak?",
-        "Berapa proyek yang selesai tahun ini?",
-        "Apa saja kategori proyek yang ada?",
-        "Proyek mana yang sedang dalam proses?"
+        "Bagaimana distribusi status proyek (selesai vs belum selesai)?",
+        "Lokasi GI mana yang memiliki proyek terbanyak?",
+        "Bagaimana distribusi proyek per tahun?",
+        "Apa saja kategori pekerjaan yang tersedia?",
+        "Berapa proyek yang ditangani sub bidang HARGI?",
+        "Apa saja sifat pekerjaan yang ada?",
+        "Berapa proyek yang sudah selesai di tahun 2024?",
+        "Lokasi mana saja yang ada proyek gardu induk?",
+        "Bagaimana perbandingan rencana vs realisasi proyek?"
     ]
     
     return jsonify({
